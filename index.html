@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proyecto Automatas II</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+
+  <style>
+    /* Personalización de estilos */
+    body {
+      padding-top: 20px;
+      background-color: #f8f9fa;
+    }
+
+    .container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+      max-width: 1000px; /* Para evitar que el contenedor sea demasiado ancho */
+      margin: 0 auto; /* Para centrar el contenedor */
+    }
+
+    .tablaBotones {
+      margin-top: 20px;
+    }
+
+    .textArea {
+      resize: vertical;
+    }
+
+    .erroresSintacticos,
+    .consola {
+      margin-top: 20px;
+    }
+
+    /* Media queries para dispositivos móviles */
+    @media screen and (max-width: 992px) {
+      .container {
+        padding: 10px;
+      }
+
+      .tablaBotones {
+        margin-top: 10px;
+      }
+
+      .erroresSintacticos,
+      .consola {
+        margin-top: 10px;
+      }
+    }
+
+    /* Estilo para la tabla con scroll */
+    .scrollable-table {
+      max-height: 300px; /* Altura máxima de la tabla */
+      overflow-y: auto; /* Agregar scroll vertical si es necesario */
+    }
+
+  </style>
+
+</head>
+
+<body onload="limpiarFlujoDeTrabajo()">
+  <div class="container">
+    <h1>Proyecto Automatas II</h1>
+    <div class="row mt-3">
+      <div class="col-md-12">
+        <div class="cargarArchivo">
+          <h2>Gestionar Archivos</h2>
+          <label for="fileInput">Cargar archivo</label>
+          <input type="file" id="fileInput" class="form-control" aria-label="Cargar archivo">
+          <button type="button" class="btn btn-primary mt-2" onclick="abrirArchivo()">Abrir Archivo</button>
+          <button type="button" class="btn btn-primary mt-2" onclick="guardarArchivo()">Guardar</button>
+          <button type="button" class="btn btn-primary mt-2" onclick="guardarComo()">Guardar Como</button>
+          <button type="button" class="btn btn-primary mt-2" onclick="nuevoArchivo()">Nuevo Archivo</button>
+        </div>
+      </div>
+    </div>
+    <label for="input">Codigo a analizar</label>
+    <textarea class="form-control textArea" id="input" placeholder="Ingrese el código aquí" rows="10" wrap="soft" aria-label="Codigo a analizar"></textarea>
+    <div class="tablaBotones">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="datos">
+            <h2>Numero de tokens</h2>
+            <table id="tablaDeDatos" class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Tokens Totales</th>
+                  <th>Lineas Totales</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td id="tokensTotales">0</td>
+                  <td id="numberOfLines">0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="tabla">
+            <h2>Tabla de Componentes Lexicos</h2>
+            <div class="scrollable-table">
+              <table id="tablaDeSimbolos" class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Linea</th>
+                    <th>Columna</th>
+                    <th>Tipo</th>
+                    <th>Token</th>
+                    <th>OP code</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaTokensBody">
+                  <!-- Aquí se llenarán las filas de la tabla de tokens -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <div class="botones">
+            <button type="button" class="btn btn-dark" onclick="mainLexico()">Lexico</button>
+            <button type="button" class="btn btn-dark" onclick="mainSintactico()">Sintactico</button>
+            <button type="button" class="btn btn-dark" onclick="mainSemantico()">Semantico</button>
+            <button type="button" class="btn btn-dark" onclick="limpiarFlujoDeTrabajo()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-6">
+          <div class="erroresSintacticos">
+            <h2>Errores Sintacticos</h2>
+            <label for="erroresSintacticos">Errores Sintácticos</label>
+            <textarea class="form-control" readonly id="erroresSintacticos" rows="5" placeholder="Errores sintácticos" aria-label="Errores Sintácticos"></textarea>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="erroresSemanticos">
+            <h2>Errores Semánticos</h2>
+            <label for="erroresSemanticos">Errores Semánticos</label>
+            <textarea class="form-control" readonly id="erroresSemanticos" rows="5" placeholder="Errores semánticos" aria-label="Errores Semánticos"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <div class="codigoIntermedio">
+            <h2>Código Intermedio</h2>
+            <label for="codigoIntermedio">Código Intermedio</label>
+            <textarea class="form-control" readonly id="codigoIntermedio" rows="10" placeholder="Código intermedio" aria-label="Código Intermedio"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="javascript/interprete.js"></script>
+  <script src="javascript/analizadorLexico.js"></script>
+  <script src="javascript/analizadorSintactico.js"></script>
+  <script src="javascript/analizadorSemantico.js"></script>
+  <script src="javascript/global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    let archivoActual = null;
+
+    function abrirArchivo() {
+      const input = document.getElementById('fileInput');
+      input.value = ''; // Reset input value to allow selecting the same file again
+      input.click();
+
+      input.onchange = function() {
+        const file = input.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+          const contenido = e.target.result;
+          document.getElementById('input').value = contenido;
+          archivoActual = file;
+        };
+
+        reader.readAsText(file);
+      };
+    }
+
+    function guardarArchivo() {
+      if (archivoActual) {
+        const contenido = document.getElementById('input').value;
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+          const fileContent = e.target.result;
+          const updatedContent = fileContent.replace(/[\s\S]*/, contenido);
+          const updatedBlob = new Blob([updatedContent], { type: 'text/plain' });
+
+          const url = URL.createObjectURL(updatedBlob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = archivoActual.name;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        };
+
+        reader.readAsText(archivoActual);
+      } else {
+        alert('No se ha seleccionado un archivo para guardar.');
+      }
+    }
+
+    function guardarComo() {
+      const contenido = document.getElementById('input').value;
+      const blob = new Blob([contenido], { type: 'text/plain' });
+
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'nuevo_archivo.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function nuevoArchivo() {
+      document.getElementById('input').value = '';
+      archivoActual = null;
+    }
+
+    // Función para el análisis léxico
+    function mainLexico() {
+      const codigo = document.getElementById('input').value;
+      const { tokens, numberOfLines } = analizadorLexico(codigo);
+
+      // Limpiar la tabla antes de llenarla de nuevo
+      const tablaTokens = document.getElementById('tablaTokensBody');
+      if (tablaTokens) {
+        tablaTokens.innerHTML = '';
+
+        tokens.forEach(token => {
+          const fila = document.createElement('tr');
+          fila.innerHTML = `
+            <td>${token.linea}</td>
+            <td>${token.columna}</td>
+            <td>${token.tipo}</td>
+            <td>${token.token}</td>
+            <td>${token.opCode}</td>
+          `;
+          tablaTokens.appendChild(fila);
+        });
+      }
+
+      // Actualizar el total de tokens
+      const tokensTotales = document.getElementById('tokensTotales');
+      if (tokensTotales) {
+        tokensTotales.textContent = tokens.length;
+      }
+
+      const numberOfLinesElement = document.getElementById('numberOfLines');
+      if (numberOfLinesElement) {
+        numberOfLinesElement.textContent = numberOfLines;
+      }
+    }
+
+    // Función para el análisis sintáctico
+    function mainSintactico() {
+      const codigo = document.getElementById('input').value;
+      const { tokens } = analizadorLexico(codigo);
+      const { errores, arbol, codigoIntermedio } = analizadorSintactico(tokens);
+
+      // Mostrar los errores sintácticos
+      const erroresSintacticos = document.getElementById('erroresSintacticos');
+      if (erroresSintacticos) {
+        erroresSintacticos.value = errores;
+      }
+
+      // Mostrar el código intermedio
+      const codigoIntermedioTextArea = document.getElementById('codigoIntermedio');
+      if (codigoIntermedioTextArea) {
+        codigoIntermedioTextArea.value = codigoIntermedio.join('\n');
+      }
+    }
+
+    // Función para el análisis semántico
+    function mainSemantico() {
+      const codigo = document.getElementById('input').value;
+      const { tokens } = analizadorLexico(codigo);
+      const { arbol, codigoIntermedio } = analizadorSintactico(tokens);
+      const { errores } = analizadorSemantico(arbol);
+
+      // Mostrar los errores semánticos
+      const erroresSemanticos = document.getElementById('erroresSemanticos');
+      if (erroresSemanticos) {
+        erroresSemanticos.value = errores;
+      }
+
+      // Mostrar el código intermedio (ya generado en el análisis sintáctico)
+      const codigoIntermedioTextArea = document.getElementById('codigoIntermedio');
+      if (codigoIntermedioTextArea) {
+        codigoIntermedioTextArea.value = codigoIntermedio.join('\n');
+      }
+    }
+  </script>
+</body>
+
+</html>
